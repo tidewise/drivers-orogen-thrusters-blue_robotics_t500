@@ -1,0 +1,11 @@
+<package>
+  <description brief="Driver for the Blue Robotics T500 thruster">
+
+  </description>
+  <author>tidewise/wellington.castro@tidewise.io</author>
+  <license></license>
+  <url>http://tidewise.io</url>
+  <logo>http://</logo>
+  <depend package="base/cmake" />
+  <depend package="base/orogen/types" />
+</package>

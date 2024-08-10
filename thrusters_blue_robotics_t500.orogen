@@ -1,0 +1,29 @@
+# frozen_string_literal: true
+
+name "thrusters_blue_robotics_t500"
+
+import_types_from "thrusters_blue_robotics_t500Types.hpp"
+
+import_types_from "base"
+
+task_context "Task" do
+    needs_configuration
+
+    # use the defaults of the recomended ESC controller for this motor, which is
+    # blue robotics BASIC ESC 500. Keep in mind that this frequency must be compatible
+    # with the effort to pwm table
+    property "pwm_frequency", "int", 500
+
+    # used for validating cmd_in samples
+    property "command_type", "/base/JointState/MODE", :EFFORT
+
+    property "effort_to_pwm_table_file_path", "/std/string"
+
+    input_port "cmd_in", "/base/samples/Joints"
+
+    # TODO: put cmd_out as soon as we have an interface
+
+    exception_states :INVALID_COMMAND_MODE
+
+    port_driven
+end

@@ -1,0 +1,17 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "compileCommands": "/home/wellington/ws-main/drivers/orogen/thrusters_blue_robotics_t500/build/compile_commands.json"
+        },
+        {
+            "name": "Linux",
+            "compileCommands": "/home/wellington/ws-main/drivers/orogen/thrusters_blue_robotics_t500/build/compile_commands.json"
+        },
+        {
+            "name": "Win32",
+            "compileCommands": "/home/wellington/ws-main/drivers/orogen/thrusters_blue_robotics_t500/build/compile_commands.json"
+        }
+    ],
+    "version": 3
+}
