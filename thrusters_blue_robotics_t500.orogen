@@ -2,24 +2,26 @@
 
 name "thrusters_blue_robotics_t500"
 
-using_task_library "linux_pwms"
+cxx_standard "c++17"
 
 import_types_from "thrusters_blue_robotics_t500Types.hpp"
-
 import_types_from "base"
+import_types_from "linux_pwms"
 
+# Component for convert an EFFORT command into its respective PWM value
+# Should this task has a timeout? So it zero command if no input is received for the
+# given period
 task_context "Task" do
     needs_configuration
 
-    # use the defaults of the recomended ESC controller for this motor, which is
-    # blue robotics BASIC ESC 500. Keep in mind that this frequency must be compatible
-    # with the effort to pwm table
-    property "pwm_frequency", "int", 500
+    # a comma-separated csv file with two columns. The first is the effort
+    # commands (a float) and the second their respective pwm duty cyle (an int)
+    property "command_to_pwm_table_file_path", "/std/string"
 
-    # used for validating cmd_in samples
-    property "command_type", "/base/JointState/MODE", :EFFORT
-
-    property "effort_to_pwm_table_file_path", "/std/string"
+    property "lower_deadzone_command_limit", "float", -0.16
+    property "upper_deadzone_command_limit", "float", 0.26
+    property "no_actuation_pwm_command", "int", 1500
+    property "cmd_in_mode", "/base/JointState/MODE", :EFFORT
 
     input_port "cmd_in", "/base/samples/Joints"
 
