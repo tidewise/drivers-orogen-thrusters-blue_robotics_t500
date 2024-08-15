@@ -18,8 +18,6 @@ task_context "Task" do
     # commands (a float) and the second their respective pwm duty cyle (an int)
     property "command_to_pwm_table_file_path", "/std/string"
 
-    property "lower_deadzone_command_limit", "float", -0.16
-    property "upper_deadzone_command_limit", "float", 0.26
     property "no_actuation_pwm_command", "int", 1500
     property "cmd_in_mode", "/base/JointState/MODE", :EFFORT
 

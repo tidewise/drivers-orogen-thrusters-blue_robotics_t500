@@ -37,7 +37,7 @@ PWMTable loadCommandToPWMTable(std::string const& csv_file_path)
 
 uint32_t Task::computePWMCommand(float command) const
 {
-    if (command > m_lower_deadzone_command && command < m_upper_deadzone_command) {
+    if (command == 0) {
         return m_no_actuation_pwm_command;
     }
 
@@ -72,8 +72,6 @@ bool Task::configureHook()
     if (!TaskBase::configureHook())
         return false;
 
-    m_lower_deadzone_command = _lower_deadzone_command_limit.get();
-    m_upper_deadzone_command = _upper_deadzone_command_limit.get();
     m_no_actuation_pwm_command = _no_actuation_pwm_command.get();
     m_cmd_in_mode = _cmd_in_mode.get();
 

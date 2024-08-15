@@ -62,20 +62,18 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
         assert_equal 1900, pwm_out.duty_cycles[0]
     end
 
-    it "sends null pwm command when effort is inside dead zone" do
+    it "sends null pwm command when input command is zero" do
         syskit_start(task)
         t0 = Time.now
         pwm_out = expect_execution do
-            syskit_write task.cmd_in_port, effort_command({ a: -0.159, b: 0.259 })
+            syskit_write task.cmd_in_port, effort_command({ a: 0 })
         end.to do
             have_one_new_sample task.cmd_out_port
         end
 
         assert pwm_out.timestamp > t0
-        assert_equal pwm_out.duty_cycles.size, 2
-        pwm_out.duty_cycles.each do |x|
-            assert_equal task.properties.no_actuation_pwm_command, x
-        end
+        assert_equal pwm_out.duty_cycles.size, 1
+        assert_equal pwm_out.duty_cycles[0], task.properties.no_actuation_pwm_command
     end
 
     it "interpolates effort commands" do

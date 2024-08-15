@@ -39,8 +39,6 @@ namespace thrusters_blue_robotics_t500 {
         uint32_t computePWMCommand(float command) const;
 
         // Properties
-        float m_lower_deadzone_command = 1;
-        float m_upper_deadzone_command = 0;
         std::uint32_t m_no_actuation_pwm_command = 1500;
         base::JointState::MODE m_cmd_in_mode;
 
