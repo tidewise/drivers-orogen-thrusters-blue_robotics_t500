@@ -2,6 +2,8 @@
 
 name "thrusters_blue_robotics_t500"
 
+using_task_library "linux_pwms"
+
 import_types_from "thrusters_blue_robotics_t500Types.hpp"
 
 import_types_from "base"
@@ -21,7 +23,7 @@ task_context "Task" do
 
     input_port "cmd_in", "/base/samples/Joints"
 
-    # TODO: put cmd_out as soon as we have an interface
+    output_port "cmd_out", "linux_pwms/PWMCommand"
 
     exception_states :INVALID_COMMAND_MODE
 
