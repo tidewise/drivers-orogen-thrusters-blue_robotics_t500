@@ -5,7 +5,13 @@
 
 #include "thrusters_blue_robotics_t500/TaskBase.hpp"
 
+#include <base/JointState.hpp>
+
 namespace thrusters_blue_robotics_t500 {
+    struct PWMTable {
+        std::vector<float> cmd;
+        std::vector<uint32_t> duty_cycle_width;
+    };
 
     /*! \class Task
      * \brief The task context provides and requires services. It uses an ExecutionEngine
@@ -29,7 +35,19 @@ namespace thrusters_blue_robotics_t500 {
         friend class TaskBase;
 
     protected:
+    private:
+        uint32_t computePWMCommand(float command) const;
+
+        // Properties
+        std::uint32_t m_no_actuation_pwm_command = 1500;
+        base::JointState::MODE m_cmd_in_mode;
+
+        PWMTable m_cmd_to_pwm_lut;
+
+
     public:
+
+
         /** TaskContext constructor for Task
          * \param name Name of the task. This name needs to be unique to make it
          * identifiable via nameservices. \param initial_state The initial TaskState of
