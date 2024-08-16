@@ -101,7 +101,7 @@ void Task::updateHook()
     }
 
     linux_pwms::PWMCommand output;
-    output.timestamp = base::Time::now(); // should this just fwd the cmd_in time?
+    output.timestamp = base::Time::now();
     output.duty_cycles.reserve(cmd_in.size());
     for (const base::JointState& command : cmd_in.elements) {
         output.duty_cycles.push_back(
