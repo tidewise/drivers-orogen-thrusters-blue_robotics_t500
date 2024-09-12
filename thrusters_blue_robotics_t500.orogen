@@ -18,6 +18,11 @@ task_context "Task" do
     # commands (a float) and the second their respective pwm duty cyle (an int)
     property "command_to_pwm_table_file_path", "/std/string"
 
+    # A vector indicating wether the helices of the joints are inverted
+    # 1 for not inverted CCW helice
+    # -1 for inverted CW helice
+    property "helices_alignment", "/std/vector</int>"
+
     property "no_actuation_pwm_command", "int", 1500
     property "cmd_in_mode", "/base/JointState/MODE", :EFFORT
 
@@ -25,7 +30,7 @@ task_context "Task" do
 
     output_port "cmd_out", "linux_pwms/PWMCommand"
 
-    exception_states :INVALID_COMMAND_MODE
+    exception_states :INVALID_COMMAND_MODE, :INVALID_COMMAND_SIZE
 
     port_driven
 end

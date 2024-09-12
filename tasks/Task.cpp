@@ -74,6 +74,7 @@ bool Task::configureHook()
 
     m_no_actuation_pwm_command = _no_actuation_pwm_command.get();
     m_cmd_in_mode = _cmd_in_mode.get();
+    m_helices_alignment = _helices_alignment.get();
 
     m_cmd_to_pwm_lut = loadCommandToPWMTable(_command_to_pwm_table_file_path.get());
 
@@ -94,6 +95,10 @@ void Task::updateHook()
         return;
     }
 
+    if (m_helices_alignment.size() != cmd_in.size()) {
+        return exception(INVALID_COMMAND_SIZE);
+    }
+
     for (auto const& command : cmd_in.elements) {
         if (command.getMode() != m_cmd_in_mode) {
             return exception(INVALID_COMMAND_MODE);
@@ -103,9 +108,11 @@ void Task::updateHook()
     linux_pwms::PWMCommand output;
     output.timestamp = base::Time::now();
     output.duty_cycles.reserve(cmd_in.size());
-    for (const base::JointState& command : cmd_in.elements) {
-        output.duty_cycles.push_back(
-            computePWMCommand(command.getField(base::JointState::EFFORT)));
+    for (size_t command_counter = 0; command_counter < cmd_in.elements.size();
+         command_counter++) {
+        output.duty_cycles.push_back(computePWMCommand(
+            m_helices_alignment[command_counter] *
+            cmd_in.elements[command_counter].getField(base::JointState::EFFORT)));
     }
 
     _cmd_out.write(output);
