@@ -18,7 +18,9 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
     end
 
     it "raises if cmd_in has different mode than configured" do
-        task.properties.helices_alignment = [1, 1, 1]
+        task.properties.helices_alignment = [helice_alignment(:COUNTERCLOCKWISE),
+                                             helice_alignment(:COUNTERCLOCKWISE),
+                                             helice_alignment(:COUNTERCLOCKWISE)]
         cmd_in = effort_command({ a: 1, b: 2 })
         cmd_in.elements.push(Types.base.JointState.Raw(3))
         cmd_in.names.push("c")
@@ -33,7 +35,10 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
     end
 
     it "raises if cmd_in has different size than helices alignment configured" do
-        task.properties.helices_alignment = [1, 1, 1, 1]
+        task.properties.helices_alignment = [helice_alignment(:COUNTERCLOCKWISE),
+                                             helice_alignment(:COUNTERCLOCKWISE),
+                                             helice_alignment(:COUNTERCLOCKWISE),
+                                             helice_alignment(:COUNTERCLOCKWISE)]
         cmd_in = effort_command({ a: 1, b: 2 })
         cmd_in.elements.push(Types.base.JointState.Raw(3))
         cmd_in.names.push("c")
@@ -48,7 +53,7 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
     end
 
     it "saturates backwards" do
-        task.properties.helices_alignment = [1]
+        task.properties.helices_alignment = [helice_alignment(:COUNTERCLOCKWISE)]
         syskit_configure_and_start(task)
         t0 = Time.now
         pwm_out = expect_execution do
@@ -63,7 +68,7 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
     end
 
     it "saturates forward" do
-        task.properties.helices_alignment = [1]
+        task.properties.helices_alignment = [helice_alignment(:COUNTERCLOCKWISE)]
         syskit_configure_and_start(task)
         t0 = Time.now
         pwm_out = expect_execution do
@@ -78,7 +83,7 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
     end
 
     it "saturates backwards inverted helice" do
-        task.properties.helices_alignment = [-1]
+        task.properties.helices_alignment = [helice_alignment(:CLOCKWISE)]
         syskit_configure_and_start(task)
         t0 = Time.now
         pwm_out = expect_execution do
@@ -93,7 +98,7 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
     end
 
     it "saturates forward inverted helice" do
-        task.properties.helices_alignment = [-1]
+        task.properties.helices_alignment = [helice_alignment(:CLOCKWISE)]
         syskit_configure_and_start(task)
         t0 = Time.now
         pwm_out = expect_execution do
@@ -108,7 +113,7 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
     end
 
     it "sends null pwm command when input command is zero" do
-        task.properties.helices_alignment = [1]
+        task.properties.helices_alignment = [helice_alignment(:COUNTERCLOCKWISE)]
         syskit_configure_and_start(task)
         t0 = Time.now
         pwm_out = expect_execution do
@@ -123,7 +128,11 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
     end
 
     it "interpolates effort commands" do
-        task.properties.helices_alignment = [1, 1, 1, 1, 1]
+        task.properties.helices_alignment = [helice_alignment(:COUNTERCLOCKWISE),
+                                             helice_alignment(:COUNTERCLOCKWISE),
+                                             helice_alignment(:COUNTERCLOCKWISE),
+                                             helice_alignment(:COUNTERCLOCKWISE),
+                                             helice_alignment(:COUNTERCLOCKWISE)]
         syskit_configure_and_start(task)
 
         t0 = Time.now
@@ -146,7 +155,11 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
     end
 
     it "interpolates effort commands with inverted helice" do
-        task.properties.helices_alignment = [-1, -1, -1, -1, -1]
+        task.properties.helices_alignment = [helice_alignment(:CLOCKWISE),
+                                             helice_alignment(:CLOCKWISE),
+                                             helice_alignment(:CLOCKWISE),
+                                             helice_alignment(:CLOCKWISE),
+                                             helice_alignment(:CLOCKWISE)]
         syskit_configure_and_start(task)
 
         t0 = Time.now
@@ -174,5 +187,9 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
             names: values.map { |k, _| k.to_s },
             elements: values.map { |_, x| Types.base.JointState.Effort(x) }
         )
+    end
+
+    def helice_alignment(alignment)
+        Types.thrusters_blue_robotics_t500.HeliceAlignment.new(alignment)
     end
 end

@@ -18,10 +18,9 @@ task_context "Task" do
     # commands (a float) and the second their respective pwm duty cyle (an int)
     property "command_to_pwm_table_file_path", "/std/string"
 
-    # A vector indicating wether the helices of the joints are inverted
-    # 1 for not inverted CCW helice
-    # -1 for inverted CW helice
-    property "helices_alignment", "/std/vector</int>"
+    # A vector indicating the helices alignment
+    # The helices can be either Clockwise oriented or Counter Clockwise oriented
+    property "helices_alignment", "/std/vector</thrusters_blue_robotics_t500/HeliceAlignment>"
 
     property "no_actuation_pwm_command", "int", 1500
     property "cmd_in_mode", "/base/JointState/MODE", :EFFORT

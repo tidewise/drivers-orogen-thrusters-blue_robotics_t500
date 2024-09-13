@@ -74,8 +74,10 @@ bool Task::configureHook()
 
     m_no_actuation_pwm_command = _no_actuation_pwm_command.get();
     m_cmd_in_mode = _cmd_in_mode.get();
-    m_helices_alignment = _helices_alignment.get();
-
+    auto const helices_alignment = _helices_alignment.get();
+    for (auto const& alignment : helices_alignment) {
+        m_helices_alignment.push_back(static_cast<int>(alignment));
+    }
     m_cmd_to_pwm_lut = loadCommandToPWMTable(_command_to_pwm_table_file_path.get());
 
     return true;
