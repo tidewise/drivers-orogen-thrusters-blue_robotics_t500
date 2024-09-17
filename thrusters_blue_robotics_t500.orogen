@@ -18,6 +18,10 @@ task_context "Task" do
     # commands (a float) and the second their respective pwm duty cyle (an int)
     property "command_to_pwm_table_file_path", "/std/string"
 
+    # A vector indicating the helices alignment
+    # The helices can be either Clockwise oriented or Counter Clockwise oriented
+    property "helices_alignment", "/std/vector</thrusters_blue_robotics_t500/HeliceAlignment>"
+
     property "no_actuation_pwm_command", "int", 1500
     property "cmd_in_mode", "/base/JointState/MODE", :EFFORT
 
@@ -25,7 +29,7 @@ task_context "Task" do
 
     output_port "cmd_out", "linux_pwms/PWMCommand"
 
-    exception_states :INVALID_COMMAND_MODE
+    exception_states :INVALID_COMMAND_MODE, :INVALID_COMMAND_SIZE
 
     port_driven
 end

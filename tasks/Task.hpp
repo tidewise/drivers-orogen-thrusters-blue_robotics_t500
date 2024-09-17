@@ -43,7 +43,7 @@ namespace thrusters_blue_robotics_t500 {
         base::JointState::MODE m_cmd_in_mode;
 
         PWMTable m_cmd_to_pwm_lut;
-
+        std::vector<int> m_helices_alignment;
 
     public:
 
