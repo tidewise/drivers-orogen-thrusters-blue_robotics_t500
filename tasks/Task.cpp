@@ -63,6 +63,18 @@ uint32_t Task::computePWMCommand(float command) const
     return std::round(out);
 }
 
+uint32_t Task::invertPWMCommand(uint32_t pwm_command) const
+{
+    const auto& lut = m_cmd_to_pwm_lut;
+    uint32_t lut_center =
+        (lut.duty_cycle_width.back() + lut.duty_cycle_width.front()) / 2;
+    auto cmd_distance_from_center = abs(lut_center - pwm_command);
+    if (pwm_command < lut_center) {
+        return pwm_command + 2 * cmd_distance_from_center;
+    }
+    return pwm_command - 2 * cmd_distance_from_center;
+}
+
 /// The following lines are template definitions for the various state machine
 // hooks defined by Orocos::RTT. See Task.hpp for more detailed
 // documentation about them.
@@ -114,9 +126,12 @@ void Task::updateHook()
     output.duty_cycles.reserve(cmd_in.size());
     for (size_t command_counter = 0; command_counter < cmd_in.elements.size();
          command_counter++) {
-        output.duty_cycles.push_back(computePWMCommand(
-            m_helices_alignment[command_counter] *
-            cmd_in.elements[command_counter].getField(base::JointState::EFFORT)));
+        auto pwm_command = computePWMCommand(
+            cmd_in.elements[command_counter].getField(base::JointState::EFFORT));
+        if (m_helices_alignment[command_counter] == -1) {
+            pwm_command = invertPWMCommand(pwm_command);
+        }
+        output.duty_cycles.push_back(pwm_command);
     }
 
     _cmd_out.write(output);

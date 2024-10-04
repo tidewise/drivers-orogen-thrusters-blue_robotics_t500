@@ -37,6 +37,7 @@ namespace thrusters_blue_robotics_t500 {
     protected:
     private:
         uint32_t computePWMCommand(float command) const;
+        uint32_t invertPWMCommand(uint32_t pwm_command) const;
 
         // Properties
         std::uint32_t m_no_actuation_pwm_command = 1500;
