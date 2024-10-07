@@ -65,14 +65,7 @@ uint32_t Task::computePWMCommand(float command) const
 
 uint32_t Task::invertPWMCommand(uint32_t pwm_command) const
 {
-    const auto& lut = m_cmd_to_pwm_lut;
-    uint32_t lut_center =
-        (lut.duty_cycle_width.back() + lut.duty_cycle_width.front()) / 2;
-    auto cmd_distance_from_center = abs(lut_center - pwm_command);
-    if (pwm_command < lut_center) {
-        return pwm_command + 2 * cmd_distance_from_center;
-    }
-    return pwm_command - 2 * cmd_distance_from_center;
+    return m_lut_center_duty_cycle - (pwm_command - m_lut_center_duty_cycle);
 }
 
 /// The following lines are template definitions for the various state machine
@@ -84,6 +77,7 @@ bool Task::configureHook()
     if (!TaskBase::configureHook())
         return false;
 
+    m_lut_center_duty_cycle = _center_duty_cycle.get();
     m_no_actuation_pwm_command = _no_actuation_pwm_command.get();
     m_cmd_in_mode = _cmd_in_mode.get();
     auto const helices_alignment = _helices_alignment.get();
@@ -93,7 +87,6 @@ bool Task::configureHook()
         m_helices_alignment.emplace_back(static_cast<int>(alignment));
     }
     m_cmd_to_pwm_lut = loadCommandToPWMTable(_command_to_pwm_table_file_path.get());
-
     return true;
 }
 bool Task::startHook()

@@ -15,6 +15,7 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
 
         @task.properties.command_to_pwm_table_file_path = command_table_path
         @task.properties.no_actuation_pwm_command = 42
+        @task.properties.center_duty_cycle = 1500
     end
 
     it "raises if cmd_in has different mode than configured" do
