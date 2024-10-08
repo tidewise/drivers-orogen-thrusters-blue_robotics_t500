@@ -63,6 +63,11 @@ uint32_t Task::computePWMCommand(float command) const
     return std::round(out);
 }
 
+uint32_t Task::invertPWMCommand(uint32_t pwm_command) const
+{
+    return m_lut_center_duty_cycle - (pwm_command - m_lut_center_duty_cycle);
+}
+
 /// The following lines are template definitions for the various state machine
 // hooks defined by Orocos::RTT. See Task.hpp for more detailed
 // documentation about them.
@@ -72,6 +77,7 @@ bool Task::configureHook()
     if (!TaskBase::configureHook())
         return false;
 
+    m_lut_center_duty_cycle = _center_duty_cycle.get();
     m_no_actuation_pwm_command = _no_actuation_pwm_command.get();
     m_cmd_in_mode = _cmd_in_mode.get();
     auto const helices_alignment = _helices_alignment.get();
@@ -81,7 +87,6 @@ bool Task::configureHook()
         m_helices_alignment.emplace_back(static_cast<int>(alignment));
     }
     m_cmd_to_pwm_lut = loadCommandToPWMTable(_command_to_pwm_table_file_path.get());
-
     return true;
 }
 bool Task::startHook()
@@ -114,9 +119,12 @@ void Task::updateHook()
     output.duty_cycles.reserve(cmd_in.size());
     for (size_t command_counter = 0; command_counter < cmd_in.elements.size();
          command_counter++) {
-        output.duty_cycles.push_back(computePWMCommand(
-            m_helices_alignment[command_counter] *
-            cmd_in.elements[command_counter].getField(base::JointState::EFFORT)));
+        auto pwm_command = computePWMCommand(
+            cmd_in.elements[command_counter].getField(base::JointState::EFFORT));
+        if (m_helices_alignment[command_counter] == -1) {
+            pwm_command = invertPWMCommand(pwm_command);
+        }
+        output.duty_cycles.push_back(pwm_command);
     }
 
     _cmd_out.write(output);

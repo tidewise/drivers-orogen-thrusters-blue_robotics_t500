@@ -15,6 +15,7 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
 
         @task.properties.command_to_pwm_table_file_path = command_table_path
         @task.properties.no_actuation_pwm_command = 42
+        @task.properties.center_duty_cycle = 1500
     end
 
     it "raises if cmd_in has different mode than configured" do
@@ -87,7 +88,7 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
         syskit_configure_and_start(task)
         t0 = Time.now
         pwm_out = expect_execution do
-            syskit_write task.cmd_in_port, effort_command({ a: -16.45 })
+            syskit_write task.cmd_in_port, effort_command({ a: -10.45 })
         end.to do
             have_one_new_sample task.cmd_out_port
         end
@@ -102,7 +103,7 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
         syskit_configure_and_start(task)
         t0 = Time.now
         pwm_out = expect_execution do
-            syskit_write task.cmd_in_port, effort_command({ a: 10.32 })
+            syskit_write task.cmd_in_port, effort_command({ a: 17.32 })
         end.to do
             have_one_new_sample task.cmd_out_port
         end
@@ -174,7 +175,33 @@ describe OroGen.thrusters_blue_robotics_t500.Task do
         assert pwm_out.timestamp > t0
         assert_equal pwm_out.duty_cycles.size, 5
 
-        expected = [1381, 1238, 1449, 1607, 1702]
+        expected = [1411, 1305, 1461, 1647, 1771]
+
+        expected.zip(pwm_out.duty_cycles).each do |true_value, actual|
+            assert_equal true_value, actual
+        end
+    end
+
+    it "allows both commands to go to maximum duty cycle despite the helice alignment" do
+        task.properties.helices_alignment = [helice_alignment(:CLOCKWISE),
+                                             helice_alignment(:COUNTERCLOCKWISE),
+                                             helice_alignment(:CLOCKWISE),
+                                             helice_alignment(:COUNTERCLOCKWISE)]
+        syskit_configure_and_start(task)
+
+        t0 = Time.now
+        pwm_out = expect_execution do
+            syskit_write(task.cmd_in_port,
+                         effort_command({ a: 16.44, b: 16.44,
+                                          c: -10.31, d: -10.31  }))
+        end.to do
+            have_one_new_sample task.cmd_out_port
+        end
+
+        assert pwm_out.timestamp > t0
+        assert_equal pwm_out.duty_cycles.size, 4
+
+        expected = [1100, 1900, 1900, 1100]
 
         expected.zip(pwm_out.duty_cycles).each do |true_value, actual|
             assert_equal true_value, actual
